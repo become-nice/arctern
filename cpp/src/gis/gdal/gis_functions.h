@@ -160,6 +160,10 @@ std::shared_ptr<arrow::Array> ST_Union_Aggr(
 std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
     const std::shared_ptr<arrow::Array>& geometries);
 
+std::shared_ptr<arrow::ChunkedArray> ST_Equals1(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2);
+
 }  // namespace gdal
 }  // namespace gis
 }  // namespace arctern

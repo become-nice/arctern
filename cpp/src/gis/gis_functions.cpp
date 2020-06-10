@@ -356,6 +356,11 @@ std::vector<ArrayPtr> ST_IndexedWithin(const std::vector<ArrayPtr>& points_raw,
   return VectorTypeCast<arrow::Array>(res);
 }
 
+std::shared_ptr<arrow::ChunkedArray> ST_Equals1(const std::shared_ptr<arrow::ChunkedArray>& geo1,
+                                                const std::shared_ptr<arrow::ChunkedArray>& geo2){
+  return gdal::ST_Equals1(geo1,geo2);
+}
+
 /*************************** AGGREGATE FUNCTIONS ***************************/
 
 std::string GIS_Version() {

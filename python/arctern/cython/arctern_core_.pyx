@@ -15,7 +15,7 @@
 # cython: language_level=3
 # distutils: language = c++
 
-from pyarrow.lib cimport (shared_ptr, CArray, pyarrow_wrap_array, pyarrow_unwrap_array)
+from pyarrow.lib cimport (shared_ptr, CArray, CChunkedArray, pyarrow_wrap_array, pyarrow_unwrap_array,pyarrow_wrap_chunked_array,pyarrow_unwrap_chunked_array)
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 cimport arctern_core__ as arctern_core_pxd
@@ -363,6 +363,10 @@ def ST_Union_Aggr(object geo_arr):
 
 def ST_Envelope_Aggr(object geo_arr):
     return pyarrow_wrap_array(arctern_core_pxd.ST_Envelope_Aggr(pyarrow_unwrap_array(geo_arr)))
+
+def ST_Equals1(object geo1,object geo2):
+    result = arctern_core_pxd.ST_Equals1(pyarrow_unwrap_chunked_array(geo1),pyarrow_unwrap_chunked_array(geo2))
+    return pyarrow_wrap_chunked_array(result)
 
 def GIS_Version():
     return arctern_core_pxd.GIS_Version()

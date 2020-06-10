@@ -1296,6 +1296,25 @@ std::shared_ptr<arrow::Array> ST_Envelope_Aggr(
   return results;
 }
 
+std::shared_ptr<arrow::ChunkedArray> ST_Equals1(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2) {
+  auto num_chunks = geo1->num_chunks();
+  std::vector<std::shared_ptr<arrow::Array>> chunks;
+  for (int32_t i = 0; i < num_chunks; i++){
+    auto geo1_chunk = std::static_pointer_cast<arrow::DoubleArray>(geo1->chunk(i));
+    auto geo2_chunk = std::static_pointer_cast<arrow::DoubleArray>(geo2->chunk(i));
+    arrow::BooleanBuilder builder;
+    for (int32_t j = 0; j < geo1_chunk->length(); j++) {
+      builder.Append(geo1_chunk->Value(j) == geo2_chunk->Value(j));
+    }
+    std::shared_ptr<arrow::Array> result_chunk;
+    builder.Finish(&result_chunk);
+    chunks.push_back(result_chunk);
+  }
+  return std::make_shared<arrow::ChunkedArray>(chunks);
+}
+
 }  // namespace gdal
 }  // namespace gis
 }  // namespace arctern

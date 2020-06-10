@@ -161,6 +161,24 @@ def _to_pandas_series(array_list):
                 result = result.append(array.to_pandas(), ignore_index=True)
     return result
 
+def _chunked_array_to_pandas_series(chunked_array):
+    result = None
+
+    for array in chunked_array.chunks():
+        if isinstance(array, list):
+            for arr in array:
+                if result is None:
+                    result = arr.to_pandas()
+                else:
+                    result = result.append(arr.to_pandas(), ignore_index=True)
+        else:
+            if result is None:
+                result = array.to_pandas()
+            else:
+                result = result.append(array.to_pandas(), ignore_index=True)
+    return result
+
+
 
 @arctern_udf('double', 'double')
 def ST_Point(x, y):
@@ -978,6 +996,15 @@ def ST_Length(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_Length, arr_geos)
 
+@arctern_udf('binary', 'binary')
+def ST_Equals1(geo1, geo2):
+    import pyarrow as pa
+    arr_geo1 = pa.array(geo1, type='binary')
+    arr_geo2 = pa.array(geo2, type='binary')
+    arr_geo1 = pa.ChunkedArray(arr_geo1)
+    arr_geo2 = pa.ChunkedArray(arr_geo2)
+    result = arctern_core_.ST_Equals1(arr_geo1, arr_geo2)
+    return _chunked_array_to_pandas_series(result)
 
 @arctern_udf('binary', 'binary')
 def ST_HausdorffDistance(geo1, geo2):

@@ -139,6 +139,10 @@ std::vector<std::shared_ptr<arrow::Array>> ST_IndexedWithin(
     const std::vector<std::shared_ptr<arrow::Array>>& points,
     const std::vector<std::shared_ptr<arrow::Array>>& polygons);
 
+std::shared_ptr<arrow::ChunkedArray> ST_Equals1(
+    const std::shared_ptr<arrow::ChunkedArray>& geo1,
+    const std::shared_ptr<arrow::ChunkedArray>& geo2);
+
 std::string GIS_Version();
 
 }  // namespace gis
