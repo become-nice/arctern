@@ -60,6 +60,7 @@ __all__ = [
     "nearest_location_on_road",
     "nearest_road",
     "near_road",
+    "ST_Equals1",
     "version"
 ]
 
@@ -164,7 +165,7 @@ def _to_pandas_series(array_list):
 def _chunked_array_to_pandas_series(chunked_array):
     result = None
 
-    for array in chunked_array.chunks():
+    for array in chunked_array.chunks:
         if isinstance(array, list):
             for arr in array:
                 if result is None:
@@ -996,15 +997,23 @@ def ST_Length(geos):
     arr_geos = pa.array(geos, type='binary')
     return arctern_caller(arctern_core_.ST_Length, arr_geos)
 
-@arctern_udf('binary', 'binary')
+# @arctern_udf('binary', 'binary')
 def ST_Equals1(geo1, geo2):
     import pyarrow as pa
-    arr_geo1 = pa.array(geo1, type='binary')
-    arr_geo2 = pa.array(geo2, type='binary')
-    arr_geo1 = pa.ChunkedArray(arr_geo1)
-    arr_geo2 = pa.ChunkedArray(arr_geo2)
-    result = arctern_core_.ST_Equals1(arr_geo1, arr_geo2)
-    return _chunked_array_to_pandas_series(result)
+    import pandas as pd
+    test_df = pd.DataFrame({"geo1":geo1})
+    print(test_df.memory_usage())
+    arr_geo1 = pa.array(geo1, type='int')
+    if not isinstance(arr_geo1, pa.lib.Int64Array):
+        print(arr_geo1.num_chunks)
+    arr_geo2 = pa.array(geo2)
+    arr_geo1 = _to_arrow_array_list(arr_geo1)
+    arr_geo2 = _to_arrow_array_list(arr_geo2)
+    xxx = pa.chunked_array(arr_geo1)
+    yyy = pa.chunked_array(arr_geo2)
+    result = arctern_core_.ST_Equals1(xxx, yyy)
+    print(result.num_chunks)
+    return result.to_pandas()
 
 @arctern_udf('binary', 'binary')
 def ST_HausdorffDistance(geo1, geo2):
